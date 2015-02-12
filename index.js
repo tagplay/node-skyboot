@@ -17,45 +17,47 @@ module.exports.getSRV = getSRV;
 module.exports.getPrefetchedSRV = getPrefetchedSRV;
 module.exports.get = get;
 
-function init(options, cb) {
+function init(incoming_config, cb) {
   var self = this;
-  if (!options) { options = {}; }
+  if (!incoming_config) { incoming_config = {}; }
   if (!cb) { cb = function () {}; }
+  srv_records = incoming_config.srv_records || {};
 
-  if (!options.log) { options.log = new SimpleLogger(); }
-  this.log = options.log;
-
-  if (!options.etcd_service) {
-    this.log.warn('No options.etcd_service found. Not expanding options.');
-    root_config = options;
-    srv_records = options.srv_records || {};
-    initialized = true;
-    return cb();
-  }
+  if (!incoming_config.log) { incoming_config.log = new SimpleLogger(); }
+  this.log = incoming_config.log;
 
   seq()
-    .seq('etcd_hosts', getEtcdHosts)
-    .seq('config', getConfig)
+    .seq(getEtcdHosts)
+    .seq(getConfig)
     .flatten()
     .parEach(prefetchSrvRecords)
     .seq(finish);
 
   function getEtcdHosts() {
     var done = this;
-    dns.resolveSrv(options.etcd_service, function (err, records) {
+    if (!incoming_config.etcd_service) {
+      return done();
+    }
+    dns.resolveSrv(incoming_config.etcd_service, function (err, records) {
       if (err) { throw err }
       var hosts = records.map(function (obj) {
         return [obj.name, obj.port].join(':');
       });
       self.log.debug('ETCD hosts found: '+hosts);
-      return done(null, hosts);
+      incoming_config.etcd_hosts = hosts;
+      return done();
     });
   }
 
   function getConfig() {
     var done = this;
+    if (!incoming_config.etcd_hosts) {
+      this.log.warn('No etcd hosts found. Not expanding config.');
+      root_config = incoming_config;
+      return done();
+    }
     // Get the Config from Etcd
-    configEtcd(this.vars.etcd_hosts, options, function (err, updated_config) {
+    configEtcd(incoming_config.etcd_hosts, incoming_config, function (err, updated_config) {
       if (err) { throw err; }
       root_config = updated_config;
       expanded = true;
@@ -69,15 +71,17 @@ function init(options, cb) {
     var done = this;
     self.log.debug('Prefetching DNS record '+service);
     getSRV(service, function (err, item) {
+      if (err) { throw err; }
       srv_records[service] = item;
-      done(err, item);
+      done();
     });
   }
 
   function finish() {
+    var done = this;
     cb(null, root_config);
     initialized = true;
-    return this(null);
+    return done();
   }
 
 }
