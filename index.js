@@ -3,7 +3,7 @@ var dns = require('dns');
 var seq = require('seq');
 var configEtcd = require('config-etcd');
 
-var SimpleLogger = require('simple-logger');
+var SimpleLogger = require('./simple-logger');
 
 var root_config = {};
 var srv_records = {};

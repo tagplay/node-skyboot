@@ -7,6 +7,8 @@ var levels = {
   'debug': 1
 };
 
+module.exports = SimpleLogger;
+
 function SimpleLogger() {
   this.level = process.env.LOG_LEVEL || 'debug';
 }
