@@ -16,7 +16,7 @@ var memory_cache = cache_manager.caching({store: 'memory', max: 100, ttl: 5});
 
 module.exports.init = init;
 module.exports.getSRV = getSRV;
-module.exports.get = get;
+module.exports.config = root_config;
 module.exports.log = log;
 
 function init(incoming_config, cb) {
@@ -91,15 +91,6 @@ function getSRV(service, cb) {
       memory_cache.set(service, records);
     });
   });
-}
-
-function get(key) {
-  ensureInitialized();
-  if (root_config[key]) {
-    return root_config[key];
-  } else {
-    throw new Error('Key not found in config: '+key);
-  }
 }
 
 function ensureInitialized() {

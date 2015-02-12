@@ -8,10 +8,6 @@ Helper library for starting up and configuring apps with [SkyDNS](https://github
 
 Initializes the config. Once everything has been set up it runs `callback`. Everything that depends on the config should be run inside that callback.
 
-### skyboot.get(key);
-
-Get config key.
-
 ### skyboot.getSrv(service, _cb(err, record)_ );
 
 Looks up the DNS SRV record and returns a random service from the list of services.
@@ -24,6 +20,10 @@ Looks up the DNS SRV record and returns a random service from the list of servic
 ### skyboot.log
 
 Get the log object.
+
+### skyboot.config
+
+Access the config object.
 
 
 ## Config Explanation
@@ -93,12 +93,12 @@ var config_template = {
 };
 
 skyboot.init(config_template, function () {
-  var mqtt_config = skyboot.get('mqtt');
+  var mqtt_config = skyboot.config.mqtt;
   mqtt.connect(mqtt_config.port, mqtt_config.host);
-  var server = http.createServer().listen(skyboot.get('port'));
+  var server = http.createServer().listen(skyboot.config.port);
   skyboot.getSRV('metrics.skynds.local', function (err, service) {
     var url = ['http://', service.host, ':', service.port, '/announce/server_start'].join();
-    request.post(url, { listening: 'myserver', port: skyboot.get('port') });
+    request.post(url, { listening: 'myserver', port: skyboot.config.port });
   });
 });
 ```
@@ -122,7 +122,7 @@ onboot.strap(function (done) {
 });
 
 onboot.up(function () {
-  mqtt.connect(skyboot.get('mqtt').port, skyboot.get('mqtt').host);
+  mqtt.connect(skyboot.config.mqtt.port, skyboot.config.mqtt.host);
   // ... Do all your stuff like starting a http server listener
 });
 ```
