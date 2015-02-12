@@ -21,6 +21,10 @@ Looks up the DNS SRV record and returns a random service from the list of servic
 { host: 'hostname.service.skydns.local', port: 8080}
 ```
 
+### skyboot.log
+
+Get the log object.
+
 
 ## Config Explanation
 
@@ -67,6 +71,10 @@ If etcd_hosts and etcd_service are empty `etcd:` config values will not expand b
 Custom prefilling of dns lookup results for config expansion and `getSrv()`.
 
 This is mostly useful for local development that might not have access to the right DNS and when controlled results are required from config expansion and `getSrv()`.
+
+#### log: SimpleLogger
+
+Set a logging object. This object will be used by SkyBoot for messages.
 
 ## Quick Example
 

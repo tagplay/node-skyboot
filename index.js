@@ -11,20 +11,23 @@ var initialized = false;
 var root_config = {};
 var srv_records = {};
 var etcd = false;
-var log = false;
+var log = new SimpleLogger();
 var memory_cache = cache_manager.caching({store: 'memory', max: 100, ttl: 5});
 
 module.exports.init = init;
 module.exports.getSRV = getSRV;
 module.exports.get = get;
+module.exports.log = log;
 
 function init(incoming_config, cb) {
   if (!incoming_config) { incoming_config = {}; }
   if (!cb) { cb = function () {}; }
   srv_records = incoming_config.srv_records || {};
 
-  if (!incoming_config.log) { incoming_config.log = new SimpleLogger(); }
-  log = incoming_config.log;
+  if (incoming_config.log) {
+    log = incoming_config.log;
+    delete incoming_config.log;
+   }
 
   seq()
     .seq(getEtcdHosts)
