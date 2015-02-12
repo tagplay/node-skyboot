@@ -5,6 +5,7 @@ var configEtcd = require('config-etcd');
 
 var SimpleLogger = require('./simple-logger');
 
+var initialized = false;
 var root_config = {};
 var srv_records = {};
 
@@ -25,6 +26,7 @@ function init(options, cb) {
     this.log.warn('No options.etcd_service found. Not expanding options.');
     root_config = options;
     srv_records = options.srv_records || {};
+    initialized = true;
     return cb();
   }
 
@@ -70,12 +72,14 @@ function init(options, cb) {
 
   function finish() {
     cb(null, root_config);
-    this(null);
+    initialized = true;
+    return this(null);
   }
 
 }
 
 function getSRV(service, cb) {
+  ensureInitialized();
   dns.resolveSrv(service, function (err, records) {
     if (err) {
       throw new Error('DNS SRV lookup error for '+service);
@@ -87,6 +91,7 @@ function getSRV(service, cb) {
 }
 
 function get(key) {
+  ensureInitialized();
   if (root_config[key]) {
     return root_config[key];
   } else {
@@ -95,9 +100,16 @@ function get(key) {
 }
 
 function getPrefetchedSRV(service) {
+  ensureInitialized();
   if (srv_records[service]) {
     return srv_records[service];
   } else {
     throw new Error('SRV record was not prefetched for '+service);
+  }
+}
+
+function ensureInitialized() {
+  if (!initialized) {
+    throw new Error('SkyBoot has not initalized');
   }
 }
