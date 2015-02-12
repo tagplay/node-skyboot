@@ -6,6 +6,7 @@ var configEtcd = require('config-etcd');
 var SimpleLogger = require('./simple-logger');
 
 var initialized = false;
+var expanded = false;
 var root_config = {};
 var srv_records = {};
 
@@ -55,6 +56,7 @@ function init(options, cb) {
     configEtcd(this.vars.etcd_hosts, options, function (err, updated_config) {
       if (err) { throw err; }
       root_config = updated_config;
+      expanded = true;
       // Set up prefetch phase
       return done(null, updated_config.skydns_prefetch || []);
     });
