@@ -12,14 +12,20 @@
     "srv",
     "dns"
   ],
-  "bugs": { "url": "https://github.com/tagplay/skyboot/issues" },
+  "bugs": {
+    "url": "https://github.com/tagplay/skyboot/issues"
+  },
   "license": "MIT",
   "main": "index.js",
-  "repository": { "type": "git", "url": "https://github.com/tagplay/skyboot.git" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tagplay/skyboot.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "config-etcd": "0.0.1"
+    "config-etcd": "0.0.1",
+    "seq": "^0.3.5"
   }
 }
