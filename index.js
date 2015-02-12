@@ -10,6 +10,7 @@ var initialized = false;
 var expanded = false;
 var root_config = {};
 var srv_records = {};
+var log = false;
 var memory_cache = cache_manager.caching({store: 'memory', max: 100, ttl: 5});
 
 module.exports.init = init;
@@ -18,13 +19,12 @@ module.exports.getPrefetchedSRV = getPrefetchedSRV;
 module.exports.get = get;
 
 function init(incoming_config, cb) {
-  var self = this;
   if (!incoming_config) { incoming_config = {}; }
   if (!cb) { cb = function () {}; }
   srv_records = incoming_config.srv_records || {};
 
   if (!incoming_config.log) { incoming_config.log = new SimpleLogger(); }
-  this.log = incoming_config.log;
+  log = incoming_config.log;
 
   seq()
     .seq(getEtcdHosts)
@@ -43,7 +43,7 @@ function init(incoming_config, cb) {
       var hosts = records.map(function (obj) {
         return [obj.name, obj.port].join(':');
       });
-      self.log.debug('ETCD hosts found: '+hosts);
+      log.debug('ETCD hosts found: '+hosts);
       incoming_config.etcd_hosts = hosts;
       return done();
     });
@@ -52,7 +52,7 @@ function init(incoming_config, cb) {
   function getConfig() {
     var done = this;
     if (!incoming_config.etcd_hosts) {
-      this.log.warn('No etcd hosts found. Not expanding config.');
+      log.warn('No etcd hosts found. Not expanding config.');
       root_config = incoming_config;
       return done();
     }
@@ -69,7 +69,7 @@ function init(incoming_config, cb) {
   function prefetchSrvRecords(service) {
     // SkyDNS Prefetch Values
     var done = this;
-    self.log.debug('Prefetching DNS record '+service);
+    log.debug('Prefetching DNS record '+service);
     getSRV(service, function (err, item) {
       if (err) { throw err; }
       srv_records[service] = item;
