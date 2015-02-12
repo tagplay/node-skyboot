@@ -2,7 +2,7 @@
   "name": "skyboot",
   "version": "0.1.0",
   "description": "Start up app with SkyDNS and Config-Etcd",
-  "homepage": "https://github.com/tagplay/skyboot",
+  "homepage": "https://github.com/tagplay/node-skyboot",
   "author": "Jón Grétar Borgþórsson",
   "keywords": [
     "skydns",
@@ -13,13 +13,13 @@
     "dns"
   ],
   "bugs": {
-    "url": "https://github.com/tagplay/skyboot/issues"
+    "url": "https://github.com/tagplay/node-skyboot/issues"
   },
   "license": "MIT",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tagplay/skyboot.git"
+    "url": "https://github.com/tagplay/node-skyboot.git"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
