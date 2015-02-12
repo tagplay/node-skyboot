@@ -2,14 +2,8 @@
   "name": "skyboot",
   "version": "0.0.0",
   "description": "Start up app with SkyDNS and Config-Etcd",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/tagplay/skyboot.git"
-  },
+  "homepage": "https://github.com/tagplay/skyboot",
+  "author": "Jón Grétar Borgþórsson",
   "keywords": [
     "skydns",
     "etcd",
@@ -18,10 +12,14 @@
     "srv",
     "dns"
   ],
-  "author": "Jón Grétar Borgþórsson",
+  "bugs": { "url": "https://github.com/tagplay/skyboot/issues" },
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/tagplay/skyboot/issues"
+  "main": "index.js",
+  "repository": { "type": "git", "url": "https://github.com/tagplay/skyboot.git" },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "homepage": "https://github.com/tagplay/skyboot"
+  "dependencies": {
+    "config-etcd": "0.0.1"
+  }
 }
