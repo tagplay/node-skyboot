@@ -1,10 +1,12 @@
 'use strict';
 
 var levels = {
-  'fatal': 4,
-  'error': 3,
-  'info': 2,
-  'debug': 1
+  'fatal': 60,
+  'error': 50,
+  'warn':  40,
+  'info':  30,
+  'debug': 20,
+  'trace': 10
 };
 
 module.exports = SimpleLogger;
@@ -19,5 +21,7 @@ SimpleLogger.prototype.should = function (level) {
 
 SimpleLogger.prototype.fatal = function (message) { if (this.should('fatal')) { console.log('[FATAL] '+message) } };
 SimpleLogger.prototype.error = function (message) { if (this.should('error')) { console.log('[ERROR] '+message) } };
+SimpleLogger.prototype.warn = function (message) { if (this.should('warn')) { console.log('[WARN] '+message) } };
 SimpleLogger.prototype.info = function (message) { if (this.should('info')) { console.log('[INFO] '+message) } };
 SimpleLogger.prototype.debug = function (message) { if (this.should('debug')) { console.log('[DEBUG] '+message) } };
+SimpleLogger.prototype.trace = function (message) { if (this.should('trace')) { console.log('[TRACE] '+message) } };

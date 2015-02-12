@@ -22,7 +22,7 @@ function init(options, cb) {
   this.log = options.log;
 
   if (!options.etcd_service) {
-    this.log.fatal('No options.etcd_service found. Not expanding options.');
+    this.log.warn('No options.etcd_service found. Not expanding options.');
     root_config = options;
     srv_records = options.srv_records || {};
     return cb();
