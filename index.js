@@ -2,6 +2,7 @@
 var dns = require('dns');
 var seq = require('seq');
 var configEtcd = require('config-etcd');
+var cache_manager = require('cache-manager');
 
 var SimpleLogger = require('./simple-logger');
 
@@ -9,6 +10,7 @@ var initialized = false;
 var expanded = false;
 var root_config = {};
 var srv_records = {};
+var memory_cache = cache_manager.caching({store: 'memory', max: 100, ttl: 5});
 
 module.exports.init = init;
 module.exports.getSRV = getSRV;
@@ -85,13 +87,20 @@ function getSRV(service, cb) {
   if (srv_records[service]) {
     return cb(srv_records[service]);
   }
-  dns.resolveSrv(service, function (err, records) {
-    if (err) {
-      throw new Error('DNS SRV lookup error for '+service);
+  memory_cache.get(service, function (err, result) {
+    if (!err && result) {
+      var item = result[Math.floor(Math.random() * result.length)];
+      return cb(null, item);
     }
-    // TODO: We need this more sexy. And (optionally) caching.
-    var item = records[Math.floor(Math.random() * records.length)];
-    return cb(null, item);
+    dns.resolveSrv(service, function (err, records) {
+      if (err) {
+        throw new Error('DNS SRV lookup error for '+service);
+      }
+      // TODO: We need this more sexy. And (optionally) caching.
+      var item = records[Math.floor(Math.random() * records.length)];
+      cb(null, item);
+      memory_cache.set(service, records);
+    });
   });
 }
 
