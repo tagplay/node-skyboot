@@ -3,6 +3,8 @@ var dns = require('dns');
 var seq = require('seq');
 var configEtcd = require('config-etcd');
 
+var SimpleLogger = require('simple-logger');
+
 var root_config = {};
 var srv_records = {};
 
@@ -12,11 +14,14 @@ module.exports.getPrefetchedSRV = getPrefetchedSRV;
 module.exports.get = get;
 
 function init(options, cb) {
+  var self = this;
   if (!options) { options = {}; }
   if (!cb) { cb = function () {}; }
 
+  if (!options.log) { this.log = new SimpleLogger(); }
+
   if (!options.etcd_service) {
-    console.log('No options.etcd_service found. Not expanding options.');
+    this.log.fatal('No options.etcd_service found. Not expanding options.');
     root_config = options;
     srv_records = options.srv_records || {};
     return cb();
@@ -36,6 +41,7 @@ function init(options, cb) {
       var hosts = records.map(function (obj) {
         return [obj.name, obj.port].join(':');
       });
+      self.log.debug('ETCD hosts found: '+hosts);
       return done(null, hosts);
     });
   }
@@ -54,6 +60,7 @@ function init(options, cb) {
   function prefetchSrvRecords(service) {
     // SkyDNS Prefetch Values
     var done = this;
+    self.log.debug('Prefetching DNS record '+service);
     getSRV(service, function (err, item) {
       srv_records[service] = item;
       done(err, item);
