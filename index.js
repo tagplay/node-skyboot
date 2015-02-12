@@ -18,7 +18,8 @@ function init(options, cb) {
   if (!options) { options = {}; }
   if (!cb) { cb = function () {}; }
 
-  if (!options.log) { this.log = new SimpleLogger(); }
+  if (!options.log) { options.log = new SimpleLogger(); }
+  this.log = options.log;
 
   if (!options.etcd_service) {
     this.log.fatal('No options.etcd_service found. Not expanding options.');
