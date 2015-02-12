@@ -80,6 +80,9 @@ function init(options, cb) {
 
 function getSRV(service, cb) {
   ensureInitialized();
+  if (srv_records[service]) {
+    return cb(srv_records[service]);
+  }
   dns.resolveSrv(service, function (err, records) {
     if (err) {
       throw new Error('DNS SRV lookup error for '+service);
