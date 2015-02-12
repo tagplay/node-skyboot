@@ -1,6 +1,6 @@
 {
   "name": "skyboot",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Start up app with SkyDNS and Config-Etcd",
   "homepage": "https://github.com/tagplay/node-skyboot",
   "author": "Jón Grétar Borgþórsson",
