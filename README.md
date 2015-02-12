@@ -76,6 +76,7 @@ Simple standalone example:
 var http = require('http');
 var request = require('request');
 var skyboot = require('skyboot');
+var mqtt = require('mqtt');
 var config_template = {
   etcd_service: 'etcd-4001.skydns.local',
   mqtt: 'srv:mqtt.skynds.local',
@@ -103,6 +104,7 @@ var skyboot = require('skyboot');
 onboot.strap(function (done) {
   var config_template = {
     etcd_service: 'etcd-4001.skydns.local',
+    mqtt: 'srv:mqtt.skynds.local',
     port: 'etcd:/apps/myservice/port'
   };
   skyboot.init(config_template, done);
@@ -112,8 +114,7 @@ onboot.strap(function (done) {
 });
 
 onboot.up(function () {
-  var mqtt_config = skyboot.getPrefetchedSRV('mqtt.skydns.local');
-  mqtt.connect(mqtt_config.port, mqtt_config.connect);
+  mqtt.connect(skyboot.get('mqtt').port, skyboot.get('mqtt').host);
   // ... Do all your stuff like starting a http server listener
 });
 ```
