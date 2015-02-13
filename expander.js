@@ -5,8 +5,8 @@ var etcd = false;
 var getSRV = false;
 
 module.exports = expander;
-function expander(etcd, getSRVExternal, incoming_config, cb) {
-  etcd = etcd;
+function expander(etcdExternal, getSRVExternal, incoming_config, cb) {
+  etcd = etcdExternal;
   getSRV = getSRVExternal;
   recursiveEach(incoming_config, resolveETCD, function (err, first_expanded) {
     recursiveEach(first_expanded, resolveSRV, cb);
