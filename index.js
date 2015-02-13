@@ -85,7 +85,6 @@ function getSRV(service, cb) {
       if (err) {
         throw new Error('DNS SRV lookup error for '+service);
       }
-      // TODO: We need this more sexy. And (optionally) caching.
       var item = records[Math.floor(Math.random() * records.length)];
       cb(null, {host: item.name, port: item.port});
       memory_cache.set(service, records);
