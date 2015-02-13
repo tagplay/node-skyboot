@@ -17,13 +17,13 @@ Looks up the DNS SRV record and returns a random service from the list of servic
 { host: 'hostname.service.skydns.local', port: 8080}
 ```
 
-### skyboot.log
+### skyboot.config(key)
+
+Access the config object with the optional key:
+
+### skyboot.log()
 
 Get the log object.
-
-### skyboot.config
-
-Access the config object.
 
 
 ## Config Explanation
@@ -93,12 +93,12 @@ var config_template = {
 };
 
 skyboot.init(config_template, function () {
-  var mqtt_config = skyboot.config.mqtt;
+  var mqtt_config = skyboot.config('mqtt');
   mqtt.connect(mqtt_config.port, mqtt_config.host);
-  var server = http.createServer().listen(skyboot.config.port);
+  var server = http.createServer().listen(skyboot.config().port);
   skyboot.getSRV('metrics.skynds.local', function (err, service) {
     var url = ['http://', service.host, ':', service.port, '/announce/server_start'].join();
-    request.post(url, { listening: 'myserver', port: skyboot.config.port });
+    request.post(url, { listening: 'myserver', port: skyboot.config().port });
   });
 });
 ```
@@ -122,7 +122,7 @@ onboot.strap(function (done) {
 });
 
 onboot.up(function () {
-  mqtt.connect(skyboot.config.mqtt.port, skyboot.config.mqtt.host);
+  mqtt.connect(skyboot.config().mqtt.port, skyboot.config().mqtt.host);
   // ... Do all your stuff like starting a http server listener
 });
 ```

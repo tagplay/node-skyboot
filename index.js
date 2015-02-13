@@ -16,8 +16,8 @@ var memory_cache = cache_manager.caching({store: 'memory', max: 100, ttl: 5});
 
 module.exports.init = init;
 module.exports.getSRV = getSRV;
-module.exports.config = root_config;
-module.exports.log = log;
+module.exports.config = getConfig;
+module.exports.log = getLogger;
 
 function init(incoming_config, cb) {
   if (!incoming_config) { incoming_config = {}; }
@@ -91,6 +91,15 @@ function getSRV(service, cb) {
       memory_cache.set(service, records);
     });
   });
+}
+
+function getConfig(key) {
+  if (!key) { return root_config; }
+  return root_config[key];
+}
+
+function getLogger() {
+  return log;
 }
 
 function ensureInitialized() {
