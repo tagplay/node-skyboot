@@ -65,8 +65,8 @@ function init(incoming_config, cb) {
 
   function finish() {
     var done = this;
-    cb(null, root_config);
     initialized = true;
+    cb(null, root_config);
     return done();
   }
 
