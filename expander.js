@@ -6,7 +6,6 @@ var getSRV = false;
 
 module.exports = expander;
 function expander(etcd, getSRVExternal, incoming_config, cb) {
-  console.log(etcd, getSRVExternal)
   etcd = etcd;
   getSRV = getSRVExternal;
   recursiveEach(incoming_config, resolveETCD, function (err, first_expanded) {
