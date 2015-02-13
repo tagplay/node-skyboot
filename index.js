@@ -20,8 +20,8 @@ module.exports.config = getConfig;
 module.exports.log = getLogger;
 
 function init(incoming_config, cb) {
-  if (!incoming_config) { incoming_config = {}; }
-  if (!cb) { cb = function () {}; }
+  if (!incoming_config) { throw new Error('init() called without config'); }
+  if (!cb) { throw new Error('init() called without a callback'); }
   srv_records = incoming_config.srv_records || {};
 
   if (incoming_config.log) {
