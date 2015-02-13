@@ -94,16 +94,18 @@ function getSRV(service, cb) {
 }
 
 function getConfig(key) {
+  ensureInitialized('config()');
   if (!key) { return root_config; }
   return root_config[key];
 }
 
 function getLogger() {
+  ensureInitialized('log()');
   return log;
 }
 
-function ensureInitialized() {
+function ensureInitialized(fun) {
   if (!initialized) {
-    throw new Error('SkyBoot has not initalized');
+    throw new Error('SkyBoot has not initalized. Unable to call '+fun);
   }
 }
