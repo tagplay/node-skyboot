@@ -22,7 +22,11 @@
     "url": "https://github.com/tagplay/node-skyboot.git"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha --reporter spec test/ lib/*/test"
+  },
+  "devDependencies": {
+    "chai": "~1.7.0",
+    "mocha": "^1.18.2"
   },
   "dependencies": {
     "cache-manager": "^0.17.0",
