@@ -5,10 +5,10 @@ test:
 
 test-cov: istanbul
 	./node_modules/.bin/istanbul check-coverage \
-		--statements 90 \
-		--functions 77 \
-		--functions 100 \
-		--lines 96
+		--statements 85 \
+		--branches 75 \
+		--functions 90 \
+		--lines 85
 
 istanbul:
 	./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -R spec  test/*_test.js

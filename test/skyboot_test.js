@@ -5,17 +5,33 @@ var assert = require('chai').assert;
 var sinon = require('sinon');
 
 var skyboot = require('../');
+var SimpleLogger = require('../simple-logger');
 
 
 describe('Initializing SkyBoot', function() {
   before(function() {
-    sinon.stub(dns, 'resolveSrv', function (key, cb) {
-      cb(null, [{name: 'myhost', port: 1337}]);
+    sinon.stub(dns, 'resolveSrv', function (service, cb) {
+      if (service === 'invalid') {
+        throw new Error('Lookup error');
+      }
+      return cb(null, [{name: 'myhost', port: 1337}]);
     });
   });
 
   after(function () {
     dns.resolveSrv.restore();
+  });
+
+  it('denies you uninitialize access to config()', function () {
+    assert.throws(function config() {
+      skyboot.config();
+    });
+  });
+
+  it('denies you uninitialize access to log()', function () {
+    assert.throws(function log() {
+      skyboot.log();
+    });
   });
 
   it('requires config', function() {
@@ -38,19 +54,58 @@ describe('Initializing SkyBoot', function() {
     });
   });
 
-  it('forwards config', function(done) {
+  it('returns you your config', function(done) {
     skyboot.init({test:true}, function () {
-      assert(skyboot.config().test);
+      assert.ok(skyboot.config().test);
+      assert.ok(skyboot.config('test'));
+      done();
+    });
+  });
+
+  it('returns you a default log object', function(done) {
+    skyboot.init({}, function () {
+      assert.isObject(skyboot.log());
+      done();
+    });
+  });
+
+  it('returns you custom log object', function(done) {
+    var logger = new SimpleLogger();
+    logger.test_property = true;
+    skyboot.init({log:logger}, function () {
+      assert.isObject(skyboot.log());
+      assert.ok(skyboot.log().test_property);
       done();
     });
   });
 
   it('looks up etcd hosts', function(done) {
-    skyboot.init({etcd_service:true}, function () {
+    skyboot.init({etcd_service:'etcd.skydns.local'}, function () {
       var hosts = skyboot.config().etcd_hosts;
       assert.isArray(hosts);
       assert.include(hosts, 'myhost:1337');
       done();
+    });
+  });
+
+  it('allows you to look up DNS SRV', function () {
+    skyboot.getSRV('myservice.skydns.local', function (err, host) {
+      assert.propertyVal(host, 'host', 'myhost');
+      assert.propertyVal(host, 'port', 1337);
+    });
+  });
+
+  it('uses overridden SRV records', function () {
+    var template = {
+      srv_records: {
+        'myservice.skydns.local': {host: 'override_host', port: 1337}
+      }
+    };
+    skyboot.init(template, function () {
+      skyboot.getSRV('myservice.skydns.local', function (err, host) {
+        assert.propertyVal(host, 'host', 'override_host');
+        assert.propertyVal(host, 'port', 1337);
+      });
     });
   });
 
