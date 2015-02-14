@@ -3,7 +3,5 @@ node_js:
   - '0.12'
   - '0.10'
   - iojs
-env:
-  secure: eOdQdMh6bQjXmtC55FHiuJ3UKsp3FJYiVtdJECL6VES5spAWQl494vk/dQqAXpBK0MYLiJsR5D0rqFS+I7R4iCF3mBdzFaGYIp2NEbBaboDUSEu1bDyvWXF/1mKq12N+ykEYxAKcnpbYZ3e4iCL/oWqdFXqy2hCq8XifTNzewSo=
 after_success:
-  "make coveralls"
+  - "make coveralls"
