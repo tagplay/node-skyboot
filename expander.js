@@ -1,5 +1,4 @@
 'use strict';
-var dns = require('dns');
 var seq = require('seq');
 var etcd = false;
 var getSRV = false;
