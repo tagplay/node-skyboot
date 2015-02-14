@@ -74,7 +74,7 @@ function init(incoming_config, cb) {
 
 function getSRV(service, cb) {
   if (srv_records[service]) {
-    return cb(srv_records[service]);
+    return cb(null, srv_records[service]);
   }
   memory_cache.get(service, function (err, result) {
     if (!err && result) {
