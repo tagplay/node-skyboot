@@ -2,6 +2,8 @@
 
 Helper library for starting up and configuring apps with [SkyDNS](https://github.com/skynetservices/skydns) and [Etcd](https://github.com/coreos/etcd).
 
+[![NPM](https://nodei.co/npm/skyboot.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/skyboot/)
+
 ## Methods
 
 ### skyboot.init(config, callback);
