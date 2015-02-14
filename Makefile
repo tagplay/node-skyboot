@@ -11,7 +11,7 @@ test-cov: istanbul
 		--lines 96
 
 istanbul:
-	./node_modules/.bin/istanbul cover _mocha -- -R spec  test/*_test.js
+	./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -R spec  test/*_test.js
 
 coveralls: istanbul
 	cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
