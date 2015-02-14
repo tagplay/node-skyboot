@@ -1,4 +1,4 @@
-# SkyBoot [![Build Status](https://travis-ci.org/tagplay/node-skyboot.svg?branch=master)](https://travis-ci.org/tagplay/node-skyboot) [![npm version](https://badge.fury.io/js/skyboot.svg)](http://badge.fury.io/js/skyboot)
+# SkyBoot [![Build Status](https://travis-ci.org/tagplay/node-skyboot.svg?branch=master)](https://travis-ci.org/tagplay/node-skyboot) [![Coverage Status](https://coveralls.io/repos/tagplay/node-skyboot/badge.svg?branch=master)](https://coveralls.io/r/tagplay/node-skyboot?branch=master) [![npm version](https://badge.fury.io/js/skyboot.svg)](http://badge.fury.io/js/skyboot)
 
 Helper library for starting up and configuring apps with [SkyDNS](https://github.com/skynetservices/skydns) and [Etcd](https://github.com/coreos/etcd).
 
