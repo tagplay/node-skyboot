@@ -79,7 +79,7 @@ function getSRV(service, cb) {
   memory_cache.get(service, function (err, result) {
     if (!err && result) {
       var item = result[Math.floor(Math.random() * result.length)];
-      return cb(null, {host: item.name, port: item.port});
+      return cb(null, {host: item.name, port: item.port, from_cache: true});
     }
     dns.resolveSrv(service, function (err, records) {
       if (err) {
