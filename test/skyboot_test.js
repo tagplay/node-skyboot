@@ -11,10 +11,14 @@ var SimpleLogger = require('../simple-logger');
 describe('Initializing SkyBoot', function() {
   before(function() {
     sinon.stub(dns, 'resolveSrv', function (service, cb) {
-      if (service === 'invalid') {
-        throw new Error('Lookup error');
+      var records = {
+        'etcd.skydns.local': [{name: 'myhost', port: 1337}],
+        'service.skydns.local': [{name: 'override_host', port: 1337}]
+      };
+      if(records[service]) {
+        return cb(null, [{name: 'myhost', port: 1337}]);
       }
-      return cb(null, [{name: 'myhost', port: 1337}]);
+      throw new Error('DNS.resolveSrv lookup error for '+ service);
     });
   });
 
@@ -89,20 +93,31 @@ describe('Initializing SkyBoot', function() {
   });
 
   it('allows you to look up DNS SRV', function () {
-    skyboot.getSRV('myservice.skydns.local', function (err, host) {
+    skyboot.getSRV('service.skydns.local', function (err, host) {
       assert.propertyVal(host, 'host', 'myhost');
       assert.propertyVal(host, 'port', 1337);
+    });
+  });
+
+  it('uses previous DNS SRV lookup cache', function (done) {
+    process.nextTick(function () {
+      skyboot.getSRV('service.skydns.local', function (err, host) {
+        assert.propertyVal(host, 'host', 'myhost');
+        assert.propertyVal(host, 'port', 1337);
+        assert.propertyVal(host, 'from_cache', true);
+        done();
+      });
     });
   });
 
   it('uses overridden SRV records', function () {
     var template = {
       srv_records: {
-        'myservice.skydns.local': {host: 'override_host', port: 1337}
+        'service.skydns.local': {host: 'override_host', port: 1337}
       }
     };
     skyboot.init(template, function () {
-      skyboot.getSRV('myservice.skydns.local', function (err, host) {
+      skyboot.getSRV('service.skydns.local', function (err, host) {
         assert.propertyVal(host, 'host', 'override_host');
         assert.propertyVal(host, 'port', 1337);
       });
