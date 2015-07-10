@@ -54,7 +54,14 @@ function resolveETCD(val, cb) {
       if (err) {
         return cb(null, val);
       }
-      return cb(null, res.node.value);
+      var result;
+      try {
+        result = JSON.parse(res.node.value);
+      } catch (e) {
+        result = res.node.value;
+      } finally {
+        cb(null, result);
+      }
     });
   } else {
     return cb(null, val);
