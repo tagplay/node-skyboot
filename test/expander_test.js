@@ -15,7 +15,7 @@ var etcd_mock = {
   }
 };
 
-describe('Expander', function() {
+describe('Expander', function () {
   it('expands config', function () {
     var template = {
       test: true,

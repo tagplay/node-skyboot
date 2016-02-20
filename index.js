@@ -19,7 +19,7 @@ module.exports.getSRV = getSRV;
 module.exports.config = getConfig;
 module.exports.log = getLogger;
 
-function init(incoming_config, cb) {
+function init (incoming_config, cb) {
   if (!incoming_config) { throw new Error('init() called without config'); }
   if (!cb) { throw new Error('init() called without a callback'); }
   srv_records = incoming_config.srv_records || {};
@@ -27,30 +27,30 @@ function init(incoming_config, cb) {
   if (incoming_config.log) {
     log = incoming_config.log;
     delete incoming_config.log;
-   }
+  }
 
   seq()
     .seq(getEtcdHosts)
     .seq(expandConfig)
     .seq(finish);
 
-  function getEtcdHosts() {
+  function getEtcdHosts () {
     var done = this;
     if (!incoming_config.etcd_service) {
       return done();
     }
     dns.resolveSrv(incoming_config.etcd_service, function (err, records) {
-      if (err) { throw err }
+      if (err) { throw err; }
       var hosts = records.map(function (obj) {
         return [obj.name, obj.port].join(':');
       });
-      log.debug('ETCD hosts found: '+hosts);
+      log.debug('ETCD hosts found: ' + hosts);
       incoming_config.etcd_hosts = hosts;
       return done();
     });
   }
 
-  function expandConfig() {
+  function expandConfig () {
     var done = this;
     if (!incoming_config.etcd_hosts) {
       log.warn('No etcd hosts found. Not expanding etcd://');
@@ -58,21 +58,21 @@ function init(incoming_config, cb) {
       etcd = new Etcd(incoming_config.etcd_hosts);
     }
     expander(etcd, getSRV, incoming_config, function (err, expanded_config) {
+      if (err) log.warn({ error: err }, 'Problem expanding config');
       root_config = expanded_config;
       return done();
     });
   }
 
-  function finish() {
+  function finish () {
     var done = this;
     initialized = true;
     cb(null, root_config);
     return done();
   }
-
 }
 
-function getSRV(service, cb) {
+function getSRV (service, cb) {
   if (srv_records[service]) {
     return cb(null, srv_records[service]);
   }
@@ -83,7 +83,7 @@ function getSRV(service, cb) {
     }
     dns.resolveSrv(service, function (err, records) {
       if (err) {
-        throw new Error('DNS SRV lookup error for '+service);
+        throw new Error('DNS SRV lookup error for ' + service);
       }
       var item = records[Math.floor(Math.random() * records.length)];
       cb(null, {host: item.name, port: item.port});
@@ -92,19 +92,19 @@ function getSRV(service, cb) {
   });
 }
 
-function getConfig(key) {
+function getConfig (key) {
   ensureInitialized('config()');
   if (!key) { return root_config; }
   return root_config[key];
 }
 
-function getLogger() {
+function getLogger () {
   ensureInitialized('log()');
   return log;
 }
 
-function ensureInitialized(fun) {
+function ensureInitialized (fun) {
   if (!initialized) {
-    throw new Error('SkyBoot has not initalized. Unable to call '+fun);
+    throw new Error('SkyBoot has not initalized. Unable to call ' + fun);
   }
 }

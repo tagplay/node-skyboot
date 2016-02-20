@@ -7,18 +7,17 @@ var sinon = require('sinon');
 var skyboot = require('../');
 var SimpleLogger = require('../simple-logger');
 
-
-describe('Initializing SkyBoot', function() {
-  before(function() {
+describe('Initializing SkyBoot', function () {
+  before(function () {
     sinon.stub(dns, 'resolveSrv', function (service, cb) {
       var records = {
         'etcd.skydns.local': [{name: 'myhost', port: 1337}],
         'service.skydns.local': [{name: 'override_host', port: 1337}]
       };
-      if(records[service]) {
+      if (records[service]) {
         return cb(null, [{name: 'myhost', port: 1337}]);
       }
-      throw new Error('DNS.resolveSrv lookup error for '+ service);
+      throw new Error('DNS.resolveSrv lookup error for ' + service);
     });
   });
 
@@ -27,30 +26,30 @@ describe('Initializing SkyBoot', function() {
   });
 
   it('denies you uninitialize access to config()', function () {
-    assert.throws(function config() {
+    assert.throws(function config () {
       skyboot.config();
     });
   });
 
   it('denies you uninitialize access to log()', function () {
-    assert.throws(function log() {
+    assert.throws(function log () {
       skyboot.log();
     });
   });
 
-  it('requires config', function() {
+  it('requires config', function () {
     assert.throws(function () {
       skyboot.init();
     });
   });
 
-  it('requires callback', function() {
+  it('requires callback', function () {
     assert.throws(function () {
       skyboot.init({});
     });
   });
 
-  it('start up', function(done) {
+  it('start up', function (done) {
     skyboot.init({}, function (err, config) {
       assert.ifError(err);
       assert(config);
@@ -58,33 +57,33 @@ describe('Initializing SkyBoot', function() {
     });
   });
 
-  it('returns you your config', function(done) {
-    skyboot.init({test:true}, function () {
+  it('returns you your config', function (done) {
+    skyboot.init({test: true}, function () {
       assert.ok(skyboot.config().test);
       assert.ok(skyboot.config('test'));
       done();
     });
   });
 
-  it('returns you a default log object', function(done) {
+  it('returns you a default log object', function (done) {
     skyboot.init({}, function () {
       assert.isObject(skyboot.log());
       done();
     });
   });
 
-  it('returns you custom log object', function(done) {
+  it('returns you custom log object', function (done) {
     var logger = new SimpleLogger();
     logger.test_property = true;
-    skyboot.init({log:logger}, function () {
+    skyboot.init({log: logger}, function () {
       assert.isObject(skyboot.log());
       assert.ok(skyboot.log().test_property);
       done();
     });
   });
 
-  it('looks up etcd hosts', function(done) {
-    skyboot.init({etcd_service:'etcd.skydns.local'}, function () {
+  it('looks up etcd hosts', function (done) {
+    skyboot.init({etcd_service: 'etcd.skydns.local'}, function () {
       var hosts = skyboot.config().etcd_hosts;
       assert.isArray(hosts);
       assert.include(hosts, 'myhost:1337');
@@ -123,5 +122,4 @@ describe('Initializing SkyBoot', function() {
       });
     });
   });
-
 });
