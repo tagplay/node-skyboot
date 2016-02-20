@@ -1,7 +1,6 @@
 'use strict';
 var dns = require('dns');
 var seq = require('seq');
-var Etcd = require('node-etcd');
 var cache_manager = require('cache-manager');
 
 var SimpleLogger = require('./simple-logger');
@@ -10,7 +9,6 @@ var expander = require('./expander');
 var initialized = false;
 var root_config = {};
 var srv_records = {};
-var etcd = false;
 var log = new SimpleLogger();
 var memory_cache = cache_manager.caching({store: 'memory', max: 100, ttl: 5});
 
@@ -29,35 +27,38 @@ function init (incoming_config, cb) {
     delete incoming_config.log;
   }
 
+  // Backwards compatibility
+  if (!incoming_config.kvs_service) incoming_config.kvs_service = incoming_config.etcd_service;
+  if (!incoming_config.kvs_hosts) incoming_config.kvs_hosts = incoming_config.etcd_hosts;
+
   seq()
-    .seq(getEtcdHosts)
+    .seq(getKvsHosts)
     .seq(expandConfig)
     .seq(finish);
 
-  function getEtcdHosts () {
+  function getKvsHosts () {
     var done = this;
-    if (!incoming_config.etcd_service) {
+    if (!incoming_config.kvs_service) {
       return done();
     }
-    dns.resolveSrv(incoming_config.etcd_service, function (err, records) {
+    dns.resolveSrv(incoming_config.kvs_service, function (err, records) {
       if (err) { throw err; }
       var hosts = records.map(function (obj) {
         return [obj.name, obj.port].join(':');
       });
-      log.debug('ETCD hosts found: ' + hosts);
-      incoming_config.etcd_hosts = hosts;
+      log.debug('Key/value store hosts found: ' + hosts);
+      incoming_config.kvs_hosts = hosts;
       return done();
     });
   }
 
   function expandConfig () {
     var done = this;
-    if (!incoming_config.etcd_hosts) {
-      log.warn('No etcd hosts found. Not expanding etcd://');
-    } else {
-      etcd = new Etcd(incoming_config.etcd_hosts);
+    var kvs_type = incoming_config.kvs_type ? incoming_config.kvs_type : 'etcd';
+    if (!incoming_config.kvs_hosts) {
+      log.warn('No key/value store hosts found. Not expanding kv://');
     }
-    expander(etcd, getSRV, incoming_config, function (err, expanded_config) {
+    expander(kvs_type, getSRV, incoming_config, function (err, expanded_config) {
       if (err) log.warn({ error: err }, 'Problem expanding config');
       root_config = expanded_config;
       return done();

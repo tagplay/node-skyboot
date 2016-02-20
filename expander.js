@@ -1,16 +1,28 @@
 'use strict';
 var seq = require('seq');
-var etcd = false;
+
+var consul = require('./consul-get.js');
+var etcd = require('./etcd-get.js');
+
+var getKV = false;
 var getSRV = false;
 
 module.exports = expander;
-function expander (etcdExternal, getSRVExternal, incoming_config, cb) {
-  etcd = etcdExternal;
+function expander (kvs_type, getSRVExternal, incoming_config, cb) {
+  getKV = getter(kvs_type, incoming_config);
   getSRV = getSRVExternal;
-  recursiveEach(incoming_config, resolveETCD, function (err, first_expanded) {
+  recursiveEach(incoming_config, resolveKV, function (err, first_expanded) {
     if (err) console.log({ error: err }, 'Error in recursiveEach callback');
     recursiveEach(first_expanded, resolveSRV, cb);
   });
+}
+
+function getter (type, incoming_config) {
+  if (type === 'consul') {
+    return consul(incoming_config.kvs_hosts);
+  } else {
+    return etcd(incoming_config.kvs_hosts);
+  }
 }
 
 function recursiveEach (obj, action, cb) {
@@ -50,22 +62,15 @@ function resolveSRV (val, cb) {
   }
 }
 
-function resolveETCD (val, cb) {
-  var regex = /^etcd:(.*)$/;
-  if (matches(regex, val) && etcd) {
-    var key = val.match(regex)[1];
-    etcd.get(key, function (err, res) {
+function resolveKV (val, cb) {
+  var regex = /^kv:(.*)$/;
+  if (matches(regex, val) && getKV) {
+    getKV(val.match(regex)[1], function (err, value) {
       if (err) {
-        return cb(null, val);
+        console.log({ error: err }, 'Error getting key/value');
+        return cb(err, val);
       }
-      var result;
-      try {
-        result = JSON.parse(res.node.value);
-      } catch (e) {
-        result = res.node.value;
-      } finally {
-        cb(null, result);
-      }
+      return cb(null, value);
     });
   } else {
     return cb(null, val);

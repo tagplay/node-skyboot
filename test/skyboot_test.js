@@ -82,9 +82,9 @@ describe('Initializing SkyBoot', function () {
     });
   });
 
-  it('looks up etcd hosts', function (done) {
-    skyboot.init({etcd_service: 'etcd.skydns.local'}, function () {
-      var hosts = skyboot.config().etcd_hosts;
+  it('looks up key/value store hosts', function (done) {
+    skyboot.init({kvs_service: 'etcd.skydns.local'}, function () {
+      var hosts = skyboot.config().kvs_hosts;
       assert.isArray(hosts);
       assert.include(hosts, 'myhost:1337');
       done();

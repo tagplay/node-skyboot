@@ -22,7 +22,7 @@ describe('Expander', function () {
       my_host: 'srv:anotherbites',
       my_key: 'etcd:/some/key/val'
     };
-    expander(etcd_mock, getSRVmock, template, function (err, config) {
+    expander('etcd', getSRVmock, template, function (err, config) {
       assert.ok(config.test);
       assert.isObject(config.my_host);
       assert.deepPropertyVal(config, 'my_host.host', 'localhost');
