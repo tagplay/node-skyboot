@@ -10,9 +10,20 @@ module.exports = function (hosts) {
 
     client.kv.get(key, function (err, result) {
       if (err) console.error({ error: err, key: key }, 'Error getting value');
-      cb(err, result.Value);
+      cb(err, parseValue(result.Value));
     });
   }
 
   return get;
 };
+
+function parseValue (value) {
+  var result;
+  try {
+    result = JSON.parse(value);
+  } catch (e) {
+    result = value;
+  } finally {
+    return result;
+  }
+}
